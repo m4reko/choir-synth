@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build LaTeX with bibliography",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "pdflatex report.tex && bibtex report.aux && pdflatex report.tex && pdflatex report.tex",
+            "options": {
+                "cwd": "report"
+            }
+        }
+    ]
+}
