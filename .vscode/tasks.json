@@ -8,7 +8,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "pdflatex report.tex && bibtex report.aux && pdflatex report.tex && pdflatex report.tex",
+            "command": "pdflatex report && bibtex report && pdflatex report && pdflatex report",
             "options": {
                 "cwd": "report"
             }
