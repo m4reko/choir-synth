@@ -132,19 +132,58 @@ Lorem Ipsum
 \end{abstract}
 %
 \section{Background}\label{sec:introduction}
-\subsection{Source-filter model}
-The source-filter synthesis model, as described in lecture 7~\cite{ternstrom7:19}, is naturally based on two main components, the source and the filter. The audio signal from such a synthesis model is generated in the source, often with lots of harmonics, and then partially attenuated in the frequency spectra by the filter component. By varying the parameters in the source and the filter different timbres is created.
+Audio synthesis is a multi
 
-Many acoustical instruments creates sound through a similar phenomena~\cite{ternstrom7:19}, where a vibration from a string or a reed is filtered by the resonances of an instrument body, which is why this model can be effective in simulating acoustic instruments.
+\subsection{Source-filter model}
+The source-filter synthesis model, as described in lecture 7~\cite{ternstrom7:20}, is naturally based on two main components, the source and the filter. The audio signal from such a synthesis model is generated in the source, often with lots of harmonics, and then partially attenuated in the frequency spectra by the filter component. By varying the parameters in the source and the filter, different timbres is created.
+
+Many acoustical instruments creates sound through a similar phenomena, where a vibration from a string or a reed is filtered by the resonances of an instrument body, which is why this model can be effective in simulating acoustic instruments.~\cite{ternstrom7:20} It turns out that the instrument called the human voice is no exception.~\cite{ternstrom8:20}
+
+\subsection{The Human Voice}
+When we humans speak and sing, the parts at work can be simplified down to three main regions:~\cite{ternstrom8:20, hall:91}
+\begin{itemize}
+\item the lungs, generating pressure
+\item the vocal cords, vibrating due to the pressure from the lungs being pushed through them, creating phonation
+\item and lastly the vocal tract, filtering the vibrations, creating actual phonemes.
+\end{itemize}
+
+The similarities with the source-filter model is apparent.
+
+\subsubsection{Glottal flow}
+The lungs together with the vocal cords create what is called the glottal flow and the pressure fluctuations created in the glottal flow is a result of the vocal cords opening and closing, acting as a valve for the pressure generated in the lungs. The appearance of the waveform representing the pressure fluctuation in the glottal flow is changed by many parameters, but one important factor is voice strength. It turns out that a good enough approximation of the glottal flow is a waveform with a harmonic spectra where the slope is -6dB per harmonic (approximated sawtooth wave). When the voice strength is changing, the slope get steeper and we get less of the higher frequency harmonics.~\cite{ternstrom8:20, hall:91}
+
+\subsubsection{Formants}
+When the vocal tract filters the vibrations in the glottal flow it creates what is called formants. They are peaks in the harmonic spectra that does not change depending on which tone the vocal cords are generating, instead they are connected to the vowel that are spoken or sung. Each vowel is connected to a specific envelope in the harmonic spectra which often consists of a few noticeable peaks. By only measuring the two lowest peaks, all vowels in the english language can be separated from each other.~\cite{ternstrom8:20, hall:91}
+
+\subsubsection{Vibrato, flutter and wow}
+
+
+\subsection{Idea and expected results}
+
 
 \section{Method}\label{sec:method}
 Lorem Ipsum
 
+\subsection{Limitations}
+% Only vowels
+
+\subsection{Pure Data}
+While
+
+\subsection{Vibrato and flutter}
+
+\subsection{Formant envelope}
+
 \section{Result}\label{sec:result}
-Lorem Ipsum
+% Realtime playable
+% Vowel changing possibilities
+%
 
 \section{Discussion}\label{sec:discussion}
-Lorem Ipsum
+
+% Expected vs actual result
+
+\subsection{Future improvements}
 
 \bibliography{sources}
 
