@@ -25,7 +25,7 @@
 
 
 %user defined variables
-\def\papertitle{REAL-TIME CHOIR SYNTHESIS USING MULTIPLE SOURCE-FILTER VOICES}
+\def\papertitle{REAL-TIME POLYPHONIC CHOIR SYNTHESIS USING MULTIPLE SOURCE-FILTER VOICES}
 \def\firstauthor{Markus Wesslén}
 \def\secondauthor{}
 \def\thirdauthor{}
@@ -119,6 +119,7 @@
 %    {\thirdauthor} { Affiliation3 \\ %
 %      {\tt \href{mailto:author3@smcnetwork.org}{author3@smcnetwork.org}}}
 
+\newcommand{\fo}{$f_0$}
 
 % ***************************************** the document starts here ***************
 \begin{document}
@@ -130,9 +131,15 @@
 \begin{abstract}
 Lorem Ipsum
 \end{abstract}
-%
+% ----------------------------------------------------------
 \section{Background}\label{sec:introduction}
-Audio synthesis is a multi
+
+\subsection{Idea and expected results}
+The idea for this project comes from assignment 3 in this course where the task was to implement a voice synthesizer in Matlab using a specified synthesis model. This synthesizer was not real-time playable and at least my implementation had a very simplistic programming interface for controlling which notes were played for what time and with what vowel. It also had a very machine like vibrato and produced noisy clicks when it changed which note was played due to a very simplistic sequencing implementation.
+
+Despite all its limitations you could clearly hear that it resembled a human voice, and a few people even told me that it sounded like my own voice which was fascinating since it in some ways actually was modeled from my voice.
+
+The relative success of this really simple model made me think about creating a choir of these voice synthesizers to explore the possibilities of choir synthesis using this particular voice model. My thought was that if the parameters of each voice was carefully calibrated and modulated over time, enough separation between the voices would be created and a convincing choir sound would follow. Possibly an even more realistic sound then the singular voice.
 
 \subsection{Source-filter model}
 The source-filter synthesis model, as described in lecture 7~\cite{ternstrom7:20}, is naturally based on two main components, the source and the filter. The audio signal from such a synthesis model is generated in the source, often with lots of harmonics, and then partially attenuated in the frequency spectra by the filter component. By varying the parameters in the source and the filter, different timbres is created.
@@ -155,35 +162,59 @@ The lungs together with the vocal cords create what is called the glottal flow a
 \subsubsection{Formants}
 When the vocal tract filters the vibrations in the glottal flow it creates what is called formants. They are peaks in the harmonic spectra that does not change depending on which tone the vocal cords are generating, instead they are connected to the vowel that are spoken or sung. Each vowel is connected to a specific envelope in the harmonic spectra which often consists of a few noticeable peaks. By only measuring the two lowest peaks, all vowels in the english language can be separated from each other.~\cite{ternstrom8:20, hall:91}
 
-\subsubsection{Vibrato, flutter and wow}
+\subsubsection{Vibrato, flutter and wow}\label{subsec:vibflutwow}
+When measuring a singers voice, small fluctuations in the pitch, \fo, is always found.~\cite{ternstrom:89} This is not strange considering all the muscles involved in singing that we have varying levels of control over. Even though some parts of the fluctuations, like vibrato, can be intentional, most of it is not controlled by the singer.
 
+The fluctuations can be classified into different categories based on their frequency.~\cite{ternstrom:89} The categories relevant to this paper is mainly flutter and vibrato but also wow in some sense. Flutter is defined as faster fluctuations of \fo  that isn't perceived as a change of the mean pitch and wow as slower fluctuations that is perceived as change of the mean pitch. The threshold between flutter and wow seem to lie somewhere between 4 and 7 Hz. Vibrato often has a frequency of around 6 Hz and is at least partly controllable by the singer.
 
-\subsection{Idea and expected results}
+Methods of synthesizing these fluctuations involves low pass filtering of white noise to get a frequency spectra with a negative slope. A peak around 5 Hz for vibrato is either added by summing the noise with a sinus wave or band pass amplification of the right frequency in the noise.~\cite{ternstrom:88, ternstrom:99}
 
-
+% ----------------------------------------------------------
 \section{Method}\label{sec:method}
-Lorem Ipsum
+The model chosen for this implementation of a choir synthesizer uses a range of source-filter voice synthesizers with slightly different parameters to create separation between them and simulate the imperfections of the human voice. Different ensemble compositions were created by adding different numbers of voices, either singing in unison or having their own voices/parts.
 
-\subsection{Limitations}
-% Only vowels
+By making the implementation as parametrized and modular as possible, the goal is to be able to tune it easily to get the most realistic sound possible.
 
 \subsection{Pure Data}
-While
+The language chosen for the implementation is Pure Data which is a graphical programming language specialized on real-time audio and signal processing. It has many of the basic functions needed for this project built in, for example midi handling, basic signal generation, basic filters and handling of multiple voices. This makes it a good choice to create something fast in the limited time frame of this project that is both real-time playable and polyphonic. No time has to be wasted on implementing filters and polyphonic voice routing.
+
+\subsection{Wavetable source}
+To generate a source signal, a tool in Pure Data is used called \textit{sinesum} which sums a number of harmonics with specified amplitudes and stores one wavelength of that signal in a wavetable which then can be played back at a chosen frequency. This makes it easy to create the slope of -6 dB per harmonic but also change the slope to emulate a weaker voice.
 
 \subsection{Vibrato and flutter}
+The vibrato and flutter waveform is generated with two different methods, an additive and a subtractive which both are described in chapter \ref{subsec:vibflutwow}. It is then used as frequency modulation with slightly varying parameters for each of the voices to create different sounding voices.
 
-\subsection{Formant envelope}
+\subsection{Formants}
+To find the set of formant frequencies for a few chosen vowels my own voice is recorded while singing different vowels. A spectrogram is created for each of the recordings and the five most significant peaks of the spectrum is identified for each of the vowels. The frequency values for these peaks is used to control the cutoff frequency of five second order low pass filters which simulates the formants created in the vocal tract.
 
-\section{Result}\label{sec:result}
-% Realtime playable
-% Vowel changing possibilities
-%
+Since the filters used can be controlled by signal, gradual shifts of formants is possible. This is implemented in a formant frequency envelope where all five formants are gradually changed from one vowel configuration to the next.
 
-\section{Discussion}\label{sec:discussion}
+\subsection{Reverb}
+A completely dry version of any audio simulation will never sound realistic since real instrument always exist in a room. A bit of reverb is therefor added to the signal to join the voices together and put them in the same virtual room.
 
-% Expected vs actual result
+\subsection{Delimitations}
 
-\subsection{Future improvements}
+\subsubsection{No consonants}
+The chosen voice synthesis model is limited to only generating vowels and no consonants.
+
+\subsubsection{Voice type}
+The theory regarding formants differ a bit between male and female voices and since the formant measurements comes from my (male) voice, I chose to only synthesize a male choir.
+
+% ----------------------------------------------------------
+\section{Results and Discussion}\label{sec:results-discussion}
+The result of this project is a fully functional, polyphonic, real-time playable choir synth implementation in Pure Data. A quartet version and an octet version were created but due to it's modularity it can easily be modified into multiple voice configurations with fewer or more voices. The quartet version has one voice per part and the octet version has two voices per part.
+
+When listening to a single voice it's much more realistic sounding then my implementation from assignment 3, probably mostly due to the \fo  modulation which is the biggest difference. When adding more voices in unison with varying parameters for \fo  modulation a slight beating appears which create a non realistic sound that is not helped by adding reverb. Although when two voices are singing intervals the beating disappears and the sound starts to resemble a real choir. The \fo  fluctuations creates liveliness and depth to the sound that isn't heard when modulating with for example a static vibrato.
+
+When changing between vowels the formant envelope creates a smooth transition that sounds convincing but the best effect is received when the formant envelopes for the different voices is tuned to slightly differing rates which create a more realistic vowel changing effect.
+
+This leads me to believe that a big improvement which can be made to this model is to slightly vary the formant values between the voices and probably also over time for each voice. This would hopefully create even more separation between the voices to create a more realistic simulation. a hypothesis is that this also would eliminate the slight beating that is created with voices i unison.
+
+Another possible addition is slower \fo  variations, or wow, which also could help to eliminating the beating.
+
+Additionally, the transition between notes for a voice is instant in this model which is not very realistic. A better way to implement this would be to add some \fo  glide between notes and possibly different glide amount for each voice.
+
+Lastly some smaller additions could be made like a few more vowels and additional midi mapping to get more hands on control over the parameters.
 
 \bibliography{sources}
 
